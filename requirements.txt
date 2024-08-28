@@ -1,0 +1,4 @@
+streamlit
+Groq
+pymupdf
+fitz  
