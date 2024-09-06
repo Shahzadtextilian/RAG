@@ -1,10 +1,10 @@
 import os
-import fitz  # PyMuPDF
+import pdfplumber
 import streamlit as st
 from groq import Groq
 
 # Set your API key here directly for testing
-#os.environ["GROQ_API_KEY"] = "GROQ_API_KEY"
+# os.environ["GROQ_API_KEY"] = "GROQ_API_KEY"
 
 # Initialize Groq client
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
@@ -12,10 +12,9 @@ client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 # Extract text from PDF
 def extract_text_from_pdf(pdf_file):
     text = ""
-    pdf_document = fitz.open(stream=pdf_file.read(), filetype="pdf")
-    for page_num in range(pdf_document.page_count):
-        page = pdf_document.load_page(page_num)
-        text += page.get_text()
+    with pdfplumber.open(pdf_file) as pdf:
+        for page in pdf.pages:
+            text += page.extract_text()
     return text
 
 # Function to upload and index the content (mocked for simplicity)
@@ -32,7 +31,7 @@ def query_indexed_content(query):
                 "content": query
             }
         ],
-        model="llama3-8b-8192"
+        model="llama-3.1-70b-versatile"
     )
     return response.choices[0].message.content
 
