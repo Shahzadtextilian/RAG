@@ -14,16 +14,20 @@ def extract_text_from_pdf(pdf_file):
     text = ""
     with pdfplumber.open(pdf_file) as pdf:
         for page in pdf.pages:
-            text += page.extract_text()
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
     return text
 
 # Function to upload and index the content (mocked for simplicity)
 def index_pdf_content(text):
     # This is a mock function. In practice, you would use Groq's API to upload and index the text.
-    pass
+    st.write("Indexing content (mocked)...")
+    # You would replace this with actual code to index the text
 
 # Create a function to query the indexed content
 def query_indexed_content(query):
+    st.write("Querying indexed content...")
     response = client.chat.completions.create(
         messages=[
             {
@@ -33,7 +37,8 @@ def query_indexed_content(query):
         ],
         model="llama-3.1-70b-versatile"
     )
-    return response.choices[0].message.content
+    st.write("API Response:", response)  # Debugging: show full API response
+    return response.choices[0].message.content if response.choices else "No response content"
 
 # Streamlit App
 def main():
@@ -45,6 +50,9 @@ def main():
         
         # Extract text from the uploaded PDF
         pdf_text = extract_text_from_pdf(uploaded_file)
+        
+        # Show a preview of the extracted text
+        st.write("Extracted Text Preview:", pdf_text[:1000])  # Show first 1000 characters
         
         # Index the PDF content (mocked)
         index_pdf_content(pdf_text)
